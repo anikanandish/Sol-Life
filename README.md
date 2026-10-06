@@ -1,4 +1,4 @@
-# TerraSol — Solarpunk Earth 2085 🌿☀️
+# TerraSol — Solarpunk Earth 
 
 An interactive, responsive single-file demonstration website portraying a harmonious Solarpunk future where high technology and vibrant, regenerative nature coexist in symbiosis.
 
@@ -25,7 +25,7 @@ An interactive, responsive single-file demonstration website portraying a harmon
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 No build tools, bundlers, or package managers required.
 
@@ -56,7 +56,7 @@ Then navigate to `http://localhost:8000`.
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 Sol-Life/
@@ -66,7 +66,7 @@ Sol-Life/
 
 ---
 
-## 🎨 Aesthetics & Design System
+##  Aesthetics & Design System
 
 - **Color Palette**:
   - *Deep Bio Canopy*: `#061712`, `#0d261d`
