@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerraSol — Solarpunk Earth 2085</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #061712;
+      --bg-surface: rgba(13, 38, 29, 0.72);
+      --bg-glass: rgba(18, 53, 40, 0.45);
+      --accent-leaf: #38e07b;
+      --accent-glow: #7ef8ab;
+      --accent-solar: #f5b041;
+      --accent-gold: #ffd166;
+      --accent-sky: #48cae4;
+      --text-main: #f0fdf4;
+      --text-sub: #bbf7d0;
+      --text-muted: #86efac;
+      --border-bio: rgba(56, 224, 123, 0.28);
+      --border-gold: rgba(245, 176, 65, 0.35);
+      --card-shadow: 0 16px 40px -10px rgba(4, 30, 20, 0.65);
+      --font-display: 'Cinzel', serif;
+      --font-body: 'Outfit', sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(56, 224, 123, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 85% 65%, rgba(245, 176, 65, 0.1) 0%, transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(72, 202, 228, 0.08) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    /* Ambient Canvas overlay */
+    #ambient-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.75;
+    }
+
+    /* Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(6, 23, 18, 0.75);
+      border-bottom: 1px solid var(--border-bio);
+      transition: all 0.3s ease;
+    }
+
+    .nav-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      fill: none;
+      stroke: var(--accent-leaf);
+      filter: drop-shadow(0 0 8px rgba(56, 224, 123, 0.6));
+      animation: pulse-leaf 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-leaf {
+      0% { transform: scale(0.97) rotate(0deg); filter: drop-shadow(0 0 6px rgba(56, 224, 123, 0.5)); }
+      100% { transform: scale(1.05) rotate(4deg); filter: drop-shadow(0 0 14px rgba(245, 176, 65, 0.8)); }
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--text-sub);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.03em;
+      position: relative;
+      transition: color 0.3s;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-leaf), var(--accent-solar));
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+
+    nav a:hover {
+      color: #fff;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .solar-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 50px;
+      background: rgba(56, 224, 123, 0.12);
+      border: 1px solid var(--border-bio);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-glow);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-leaf);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-leaf);
+      animation: blink 2s infinite ease-in-out;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 4rem;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero-content h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 4.5vw, 4.2rem);
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #ffffff 40%, #7ef8ab 80%, #ffd166 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    .hero-content p {
+      font-size: 1.2rem;
+      color: #d1fae5;
+      font-weight: 300;
+      margin-bottom: 2rem;
+      max-width: 580px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-stat {
+      border-left: 2px solid var(--accent-leaf);
+      padding-left: 1rem;
+    }
+
+    .hero-stat .stat-number {
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent-solar);
+      display: block;
+    }
+
+    .hero-stat .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .cta-group {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1.8rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-leaf) 0%, #10b981 100%);
+      color: #042918;
+      box-shadow: 0 4px 20px rgba(56, 224, 123, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 26px rgba(56, 224, 123, 0.6);
+      background: linear-gradient(135deg, var(--accent-glow) 0%, #34d399 100%);
+    }
+
+    .btn-glass {
+      background: var(--bg-glass);
+      color: #e2e8f0;
+      border: 1px solid var(--border-bio);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-glass:hover {
+      background: rgba(56, 224, 123, 0.18);
+      color: #ffffff;
+      border-color: var(--accent-leaf);
+      transform: translateY(-2px);
+    }
+
+    /* Solarpunk Biosphere Visualizer */
+    .sphere-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-bio);
+      border-radius: 28px;
+      padding: 2rem;
+      position: relative;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .sphere-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(56,224,123,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .sphere-stage {
+      width: 280px;
+      height: 280px;
+      position: relative;
+      margin: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .biosphere-core {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #5eead4, #0d9488 40%, #064e3b 85%, #022c22 100%);
+      box-shadow: 
+        0 0 45px rgba(56, 224, 123, 0.4),
+        inset 0 0 25px rgba(255, 255, 255, 0.35);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .biosphere-core:hover {
+      transform: scale(1.04);
+    }
+
+    .biosphere-clouds {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.3) 15%, transparent 40%),
+                  radial-gradient(circle at 25% 65%, rgba(255,255,255,0.25) 20%, transparent 45%);
+      mix-blend-mode: overlay;
+      animation: drift-clouds 24s linear infinite;
+    }
+
+    @keyframes drift-clouds {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .biosphere-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed rgba(245, 176, 65, 0.45);
+      pointer-events: none;
+    }
+
+    .ring-1 {
+      width: 240px;
+      height: 240px;
+      animation: spin-clockwise 22s linear infinite;
+    }
+
+    .ring-2 {
+      width: 275px;
+      height: 275px;
+      border-color: rgba(56, 224, 123, 0.35);
+      border-style: dotted;
+      animation: spin-counter 30s linear infinite;
+    }
+
+    @keyframes spin-clockwise {
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes spin-counter {
+      100% { transform: rotate(-360deg); }
+    }
+
+    .orbit-satellite {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: var(--accent-solar);
+      border-radius: 50%;
+      top: -7px;
+      left: calc(50% - 7px);
+      box-shadow: 0 0 12px var(--accent-solar);
+    }
+
+    .core-caption {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+      margin-top: 0.5rem;
+    }
+
+    .sphere-slider-group {
+      width: 100%;
+      margin-top: 1rem;
+      background: rgba(0,0,0,0.25);
+      padding: 1rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      margin-bottom: 0.5rem;
+      font-family: var(--font-mono);
+    }
+
+    .solar-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #10b981, #f5b041);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .solar-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 10px rgba(245, 176, 65, 0.9);
+      cursor: pointer;
+    }
+
+    /* Interactive Ecosystem Simulator */
+    .section-wrap {
+      max-width: 1300px;
+      margin: 5rem auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      color: var(--accent-leaf);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 3.2vw, 2.8rem);
+      color: #ffffff;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-desc {
+      color: #cbd5e1;
+      max-width: 650px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+    }
+
+    /* Simulation Control Board */
+    .sim-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-bio);
+      border-radius: 28px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      box-shadow: var(--card-shadow);
+    }
+
+    .sim-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      border-right: 1px solid rgba(56, 224, 123, 0.15);
+      padding-right: 2rem;
+    }
+
+    .sim-card {
+      background: rgba(8, 28, 21, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.25rem;
+      transition: border-color 0.3s;
+    }
+
+    .sim-card:hover {
+      border-color: var(--accent-leaf);
+    }
+
+    .sim-card label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .control-value {
+      color: var(--accent-solar);
+      font-family: var(--font-mono);
+    }
+
+    .control-range {
+      width: 100%;
+      accent-color: var(--accent-leaf);
+      cursor: pointer;
+    }
+
+    .control-help {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 0.4rem;
+    }
+
+    /* Sim Canvas & Dashboard */
+    .sim-display {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sim-viewport {
+      height: 380px;
+      width: 100%;
+      background: #02110c;
+      border-radius: 18px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(56, 224, 123, 0.2);
+    }
+
+    #ecosystem-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .overlay-hud {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      right: 1rem;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .hud-chip {
+      background: rgba(4, 21, 15, 0.75);
+      border: 1px solid var(--border-bio);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      backdrop-filter: blur(6px);
+      color: var(--text-sub);
+    }
+
+    .sim-metrics-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .metric-box {
+      background: rgba(6, 23, 18, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .metric-value {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent-leaf);
+    }
+
+    .metric-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      margin-top: 0.2rem;
+    }
+
+    /* Solarpunk Architecture & Pillars */
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .pillar-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-bio);
+      border-radius: 22px;
+      padding: 2.2rem;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(14px);
+      transition: transform 0.35s ease, border-color 0.35s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent-leaf);
+    }
+
+    .pillar-icon-wrap {
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      background: rgba(56, 224, 123, 0.12);
+      border: 1px solid var(--border-bio);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.4rem;
+      color: var(--accent-leaf);
+    }
+
+    .pillar-card:nth-child(2) .pillar-icon-wrap {
+      background: rgba(245, 176, 65, 0.12);
+      border-color: var(--border-gold);
+      color: var(--accent-solar);
+    }
+
+    .pillar-card:nth-child(3) .pillar-icon-wrap {
+      background: rgba(72, 202, 228, 0.12);
+      border-color: rgba(72, 202, 228, 0.3);
+      color: var(--accent-sky);
+    }
+
+    .pillar-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      margin-bottom: 0.8rem;
+      color: #ffffff;
+    }
+
+    .pillar-card p {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      flex-grow: 1;
+    }
+
+    .pillar-footer {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
+    .badge {
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      background: rgba(56, 224, 123, 0.15);
+      color: var(--accent-glow);
+    }
+
+    /* Community Dispatch / Interactive Blueprint */
+    .blueprint-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-bio);
+      border-radius: 28px;
+      padding: 2.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--card-shadow);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .blueprint-info h3 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #ffffff;
+    }
+
+    .blueprint-info p {
+      color: #cbd5e1;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
+
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      color: var(--text-sub);
+    }
+
+    .feature-check {
+      color: var(--accent-leaf);
+      font-size: 1.1rem;
+    }
+
+    .calculator-panel {
+      background: rgba(5, 21, 16, 0.65);
+      border: 1px solid rgba(56, 224, 123, 0.2);
+      border-radius: 20px;
+      padding: 2rem;
+    }
+
+    .calculator-panel h4 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: var(--accent-gold);
+    }
+
+    .calc-row {
+      margin-bottom: 1.25rem;
+    }
+
+    .calc-row label {
+      display: block;
+      font-size: 0.88rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+
+    .calc-select, .calc-input {
+      width: 100%;
+      background: #092017;
+      border: 1px solid var(--border-bio);
+      color: #ffffff;
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .calc-select:focus, .calc-input:focus {
+      border-color: var(--accent-leaf);
+      box-shadow: 0 0 10px rgba(56, 224, 123, 0.25);
+    }
+
+    .result-box {
+      margin-top: 1.5rem;
+      padding: 1.2rem;
+      background: rgba(56, 224, 123, 0.08);
+      border: 1px solid var(--border-bio);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .result-value {
+      font-family: var(--font-mono);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent-solar);
+    }
+
+    .result-sub {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      margin-top: 0.25rem;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-bio);
+      background: rgba(4, 15, 12, 0.95);
+      padding: 3.5rem 2rem 2rem;
+      margin-top: 6rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-inner {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .footer-copy {
+      color: #64748b;
+      font-size: 0.88rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--text-sub);
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-leaf);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .hero-content p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .hero-stats {
+        justify-content: center;
+      }
+      .cta-group {
+        justify-content: center;
+      }
+      .sim-grid {
+        grid-template-columns: 1fr;
+      }
+      .sim-controls {
+        border-right: none;
+        border-bottom: 1px solid rgba(56, 224, 123, 0.15);
+        padding-right: 0;
+        padding-bottom: 2rem;
+      }
+      .blueprint-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      nav ul {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .sim-metrics-bar {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Ambient Particle Canvas -->
+  <canvas id="ambient-canvas"></canvas>
+
+  <!-- Navigation -->
+  <header>
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" opacity="0.1"/>
+          <path d="M12 3C7.58 3 4 6.58 4 11C4 16 12 22 12 22C12 22 20 16 20 11C20 6.58 16.42 3 12 3ZM12 15C9.79 15 8 13.21 8 11C8 8.79 9.79 7 12 7C14.21 7 16 8.79 16 11C16 13.21 14.21 15 12 15Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        TerraSol
+      </a>
+      <nav>
+        <ul>
+          <li><a href="#about">Philosophy</a></li>
+          <li><a href="#simulator">Biosphere Sim</a></li>
+          <li><a href="#pillars">Architecture</a></li>
+          <li><a href="#impact">Calculator</a></li>
+        </ul>
+      </nav>
+      <div class="solar-status-pill">
+        <span class="live-dot"></span>
+        <span>GRID: 99.4% BIOCLEAN</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main>
+    <section class="hero" id="about">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <h1>Harmony Between High Technology & Flourishing Nature</h1>
+          <p>
+            Experience the Solarpunk vision of Earth: where decentralized clean energy, living architecture, community gardens, and automated stewardship revive our planet into an everlasting sanctuary.
+          </p>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span class="stat-number" id="global-solar-yield">142.8 PW</span>
+              <span class="stat-label">Daily Solar Absorption</span>
+            </div>
+            <div class="hero-stat">
+              <span class="stat-number" id="global-reforest">48.2%</span>
+              <span class="stat-label">Global Wild Canopy</span>
+            </div>
+            <div class="hero-stat">
+              <span class="stat-number">3.4B</span>
+              <span class="stat-label">Bio-Civic Citizens</span>
+            </div>
+          </div>
+          <div class="cta-group">
+            <a href="#simulator" class="btn btn-primary">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Explore Living Sim
+            </a>
+            <a href="#impact" class="btn btn-glass">
+              Calculate Community Yield
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive Solarpunk Biosphere Globe Widget -->
+        <div class="sphere-card">
+          <div class="sphere-stage">
+            <div class="biosphere-ring ring-1">
+              <div class="orbit-satellite"></div>
+            </div>
+            <div class="biosphere-ring ring-2"></div>
+            <div class="biosphere-core" id="biosphereCore" title="Click to pulse solar photosynthesis">
+              <div class="biosphere-clouds"></div>
+            </div>
+          </div>
+          <div class="core-caption">Interactive Biosphere Node • 2085 Habitat</div>
+          
+          <div class="sphere-slider-group">
+            <div class="slider-header">
+              <span>SOLAR IRRADIANCE</span>
+              <span id="irradianceValue">850 W/m²</span>
+            </div>
+            <input type="range" class="solar-slider" id="irradianceSlider" min="200" max="1400" value="850">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Ecosystem Simulator -->
+    <section class="section-wrap" id="simulator">
+      <div class="section-header">
+        <span class="section-tag">Decentralized Ecology Engine</span>
+        <h2 class="section-title">Solar & Flora Dynamics</h2>
+        <p class="section-desc">
+          Tweak sunlight, mycelial network density, and rainwater harvesting to see real-time algorithmic growth of automated vertical groves and bioclimatic energy capture.
+        </p>
+      </div>
+
+      <div class="sim-grid">
+        <div class="sim-controls">
+          <div class="sim-card">
+            <label>
+              <span>Solar Exposure</span>
+              <span class="control-value" id="val-solar">75%</span>
+            </label>
+            <input type="range" class="control-range" id="input-solar" min="10" max="100" value="75">
+            <div class="control-help">Regulates photosynthetic photon flux & micro-grid storage rate.</div>
+          </div>
+
+          <div class="sim-card">
+            <label>
+              <span>Mycelial Nutrient Flow</span>
+              <span class="control-value" id="val-mycelium">60%</span>
+            </label>
+            <input type="range" class="control-range" id="input-mycelium" min="10" max="100" value="60">
+            <div class="control-help">Underground communication speed and root vitality.</div>
+          </div>
+
+          <div class="sim-card">
+            <label>
+              <span>Atmospheric Moisture</span>
+              <span class="control-value" id="val-water">50%</span>
+            </label>
+            <input type="range" class="control-range" id="input-water" min="5" max="100" value="50">
+            <div class="control-help">Rain catcher capture & bio-mist humidity dispersal.</div>
+          </div>
+
+          <button id="btn-seed-bloom" class="btn btn-primary" style="width: 100%; justify-content: center;">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Scatter Wildflower Seeds
+          </button>
+        </div>
+
+        <div class="sim-display">
+          <div class="sim-viewport">
+            <div class="overlay-hud">
+              <div class="hud-chip">MICRO-HABITAT CANVAS [ACTIVE]</div>
+              <div class="hud-chip" id="hud-spores">SPORES: 120</div>
+            </div>
+            <canvas id="ecosystem-canvas"></canvas>
+          </div>
+
+          <div class="sim-metrics-bar">
+            <div class="metric-box">
+              <div class="metric-value" id="metric-biomass">320 kg</div>
+              <div class="metric-title">Biomass Density</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-value" id="metric-power">1.82 kW</div>
+              <div class="metric-title">Solar Harvest</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-value" id="metric-oxygen">98.9%</div>
+              <div class="metric-title">Air Purity</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-value" id="metric-equilibrium">Stable</div>
+              <div class="metric-title">Biosphere State</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture Pillars -->
+    <section class="section-wrap" id="pillars">
+      <div class="section-header">
+        <span class="section-tag">Biophilic Infrastructure</span>
+        <h2 class="section-title">The Three Pillars of Solarpunk Earth</h2>
+        <p class="section-desc">
+          Merging cutting-edge engineering with natural cyclic processes to build thriving, resilient civilizations.
+        </p>
+      </div>
+
+      <div class="pillar-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon-wrap">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h3>Symbiotic Solar Architecture</h3>
+          <p>
+            Buildings covered in transparent photovoltaic algae-glass, micro wind spirals, and ivy trellises that naturally regulate thermal load while pumping excess power into community microgrids.
+          </p>
+          <div class="pillar-footer">
+            <span class="badge">Zero Net Waste</span>
+            <span style="color: var(--accent-leaf);">Passive Climate</span>
+          </div>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon-wrap">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3>Circular Agrivoltaics</h3>
+          <p>
+            Elevated bifacial solar canopies shielding drought-vulnerable crops, reducing water evaporation by 40% while generating clean renewable juice for autonomous electric permaculture tenders.
+          </p>
+          <div class="pillar-footer">
+            <span class="badge">Food Sovereignty</span>
+            <span style="color: var(--accent-solar);">Dual Land Yield</span>
+          </div>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon-wrap">
+            <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
+          <h3>Mycelial Digital Commons</h3>
+          <p>
+            Decentralized peer-to-peer computation nodes rooted in fungal biocomputers and open hardware. Every neighborhood maintains its local repository of seeds, designs, and medical remedies.
+          </p>
+          <div class="pillar-footer">
+            <span class="badge">P2P Network</span>
+            <span style="color: var(--accent-sky);">Open Design</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Eco-Impact Calculator -->
+    <section class="section-wrap" id="impact">
+      <div class="blueprint-container">
+        <div class="blueprint-info">
+          <span class="section-tag">Participatory Design</span>
+          <h3>Ecological Habitat Planner</h3>
+          <p>
+            Model the self-sufficiency quotient of your community. Determine how living roofs, solar glass, and permaculture food forests transform standard residential nodes into net-positive climate refuges.
+          </p>
+          <ul class="feature-list">
+            <li class="feature-item">
+              <span class="feature-check">✔</span>
+              <span>Calculates carbon negative sequestration per annum</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-check">✔</span>
+              <span>Projects autonomous food forest calorie yield</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-check">✔</span>
+              <span>Integrates neighborhood rainwater retention coefficients</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="calculator-panel">
+          <h4>Configure Node Parameters</h4>
+          <div class="calc-row">
+            <label for="settlementType">Habitat Typology</label>
+            <select id="settlementType" class="calc-select">
+              <option value="ecovillage">Regenerative Eco-Village (250 souls)</option>
+              <option value="verticalArc">Vertical Biophilic Arcology (2,500 souls)</option>
+              <option value="suburbanCoop">Retrofit Suburban Cooperative (800 souls)</option>
+            </select>
+          </div>
+
+          <div class="calc-row">
+            <label for="greenRoofPct">Living Canopy Coverage: <span id="roofPctText" class="control-value">65%</span></label>
+            <input type="range" id="greenRoofPct" class="control-range" min="10" max="100" value="65">
+          </div>
+
+          <div class="calc-row">
+            <label for="solarPanelSqM">Perovskite Solar Shading (sq. meters)</label>
+            <input type="number" id="solarPanelSqM" class="calc-input" value="1200" min="100" max="25000">
+          </div>
+
+          <div class="result-box">
+            <div class="result-value" id="calcNetCleanEnergy">438 MWh / yr</div>
+            <div class="result-sub">Projected Net Surplus Renewable Energy</div>
+            <div style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--accent-leaf);" id="calcCarbonOffset">
+              🌱 Sequestering ~124 Metric Tons CO₂ annually
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="brand">
+        <svg class="brand-icon" style="width: 28px; height: 28px;" viewBox="0 0 24 24">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+        TerraSol Earth
+      </div>
+      <div class="footer-copy">
+        Crafted for Solarpunk Earth • Nature x Automation in Cooperative Symbiosis
+      </div>
+      <ul class="footer-links">
+        <li><a href="#about">Philosophy</a></li>
+        <li><a href="#simulator">Ecosystem Simulator</a></li>
+        <li><a href="#pillars">Green Tech</a></li>
+        <li><a href="#impact">Calculators</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    /* =========================================================================
+       1. AMBIENT SPORE & LIGHT PARTICLE CANVAS
+       ========================================================================= */
+    const ambientCanvas = document.getElementById('ambient-canvas');
+    const ambientCtx = ambientCanvas.getContext('2d');
+    let width, height;
+    let spores = [];
+
+    function resizeCanvas() {
+      width = ambientCanvas.width = window.innerWidth;
+      height = ambientCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class AmbientSpore {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2.5 + 0.8;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = -Math.random() * 0.6 - 0.15;
+        this.hue = Math.random() > 0.4 ? 142 : 45; // Green or Solar gold
+        this.alpha = Math.random() * 0.5 + 0.2;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.y < 0) this.y = height;
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+      }
+      draw(ctx) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${this.hue}, 80%, 65%, ${this.alpha})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = `hsla(${this.hue}, 90%, 60%, 0.8)`;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    for (let i = 0; i < 45; i++) {
+      spores.push(new AmbientSpore());
+    }
+
+    function renderAmbient() {
+      ambientCtx.clearRect(0, 0, width, height);
+      spores.forEach(s => {
+        s.update();
+        s.draw(ambientCtx);
+      });
+      requestAnimationFrame(renderAmbient);
+    }
+    renderAmbient();
+
+
+    /* =========================================================================
+       2. INTERACTIVE BIOSPHERE CONTROLS
+       ========================================================================= */
+    const irradianceSlider = document.getElementById('irradianceSlider');
+    const irradianceValue = document.getElementById('irradianceValue');
+    const biosphereCore = document.getElementById('biosphereCore');
+    const globalSolarYield = document.getElementById('global-solar-yield');
+
+    irradianceSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      irradianceValue.textContent = `${val} W/m²`;
+      
+      // Scale visual solar energy and glow
+      const factor = val / 850;
+      biosphereCore.style.boxShadow = `0 0 ${40 * factor}px rgba(56, 224, 123, ${0.4 * factor}), 0 0 ${20 * factor}px rgba(245, 176, 65, ${0.5 * factor})`;
+      
+      const calcPW = (142.8 * factor).toFixed(1);
+      globalSolarYield.textContent = `${calcPW} PW`;
+    });
+
+    biosphereCore.addEventListener('click', () => {
+      biosphereCore.animate([
+        { transform: 'scale(1)' },
+        { transform: 'scale(1.15)', boxShadow: '0 0 70px rgba(126, 248, 171, 0.9)' },
+        { transform: 'scale(1)' }
+      ], {
+        duration: 650,
+        easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+      });
+    });
+
+
+    /* =========================================================================
+       3. ECOSYSTEM SIMULATOR CANVAS & ALGORITHMIC BOTANY
+       ========================================================================= */
+    const ecoCanvas = document.getElementById('ecosystem-canvas');
+    const ecoCtx = ecoCanvas.getContext('2d');
+    let ecoW, ecoH;
+
+    function resizeEcoCanvas() {
+      ecoW = ecoCanvas.width = ecoCanvas.parentElement.clientWidth;
+      ecoH = ecoCanvas.height = ecoCanvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resizeEcoCanvas);
+    resizeEcoCanvas();
+
+    // Inputs & Indicators
+    const inputSolar = document.getElementById('input-solar');
+    const inputMycelium = document.getElementById('input-mycelium');
+    const inputWater = document.getElementById('input-water');
+    const valSolar = document.getElementById('val-solar');
+    const valMycelium = document.getElementById('val-mycelium');
+    const valWater = document.getElementById('val-water');
+    const btnSeed = document.getElementById('btn-seed-bloom');
+
+    const hudSpores = document.getElementById('hud-spores');
+    const metricBiomass = document.getElementById('metric-biomass');
+    const metricPower = document.getElementById('metric-power');
+    const metricOxygen = document.getElementById('metric-oxygen');
+    const metricEquilibrium = document.getElementById('metric-equilibrium');
+
+    [inputSolar, inputMycelium, inputWater].forEach(input => {
+      input.addEventListener('input', () => {
+        valSolar.textContent = inputSolar.value + '%';
+        valMycelium.textContent = inputMycelium.value + '%';
+        valWater.textContent = inputWater.value + '%';
+        updateMetrics();
+      });
+    });
+
+    function updateMetrics() {
+      const s = parseInt(inputSolar.value);
+      const m = parseInt(inputMycelium.value);
+      const w = parseInt(inputWater.value);
+
+      const biomass = Math.round(180 + (s * 1.2) + (m * 2.1) + (w * 1.5));
+      metricBiomass.textContent = `${biomass} kg`;
+
+      const power = ((s * 0.024) + (w * 0.004)).toFixed(2);
+      metricPower.textContent = `${power} kW`;
+
+      const o2 = (96.5 + (biomass / 800) * 3).toFixed(1);
+      metricOxygen.textContent = `${Math.min(99.9, o2)}%`;
+
+      if (Math.abs(s - w) > 40) {
+        metricEquilibrium.textContent = 'Fluctuating';
+        metricEquilibrium.style.color = 'var(--accent-solar)';
+      } else {
+        metricEquilibrium.textContent = 'Harmonious';
+        metricEquilibrium.style.color = 'var(--accent-leaf)';
+      }
+    }
+
+    // Algorithmic Fractal Tree / Plant Generator
+    class BiophilicStem {
+      constructor(x, y, maxLen, branchAngle) {
+        this.x = x;
+        this.y = y;
+        this.maxLen = maxLen;
+        this.branchAngle = branchAngle;
+        this.growth = 0.2;
+      }
+
+      drawBranch(ctx, startX, startY, len, angle, depth) {
+        if (depth === 0) return;
+
+        const endX = startX + len * Math.sin(angle);
+        const endY = startY - len * Math.cos(angle);
+
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.lineWidth = Math.max(1, depth * 1.5);
+        
+        // Solar-infused bioluminescent hue
+        const sVal = parseInt(inputSolar.value);
+        const greenTone = 120 + Math.floor((sVal / 100) * 35);
+        ctx.strokeStyle = `hsl(${greenTone}, 75%, ${35 + depth * 7}%)`;
+        ctx.stroke();
+
+        if (depth <= 2) {
+          // Flower / Solar Node at tip
+          ctx.beginPath();
+          ctx.arc(endX, endY, 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = depth === 1 ? '#ffd166' : '#7ef8ab';
+          ctx.fill();
+        }
+
+        const sway = Math.sin(Date.now() * 0.002 + startX) * 0.04;
+        const waterBoost = parseInt(inputWater.value) / 100;
+        const nextLen = len * (0.72 + waterBoost * 0.06);
+
+        this.drawBranch(ctx, endX, endY, nextLen, angle - this.branchAngle + sway, depth - 1);
+        this.drawBranch(ctx, endX, endY, nextLen, angle + this.branchAngle + sway, depth - 1);
+      }
+
+      render(ctx) {
+        const myceliumFactor = parseInt(inputMycelium.value) / 100;
+        const depth = Math.floor(4 + myceliumFactor * 2);
+        this.drawBranch(ctx, this.x, this.y, this.maxLen, 0, depth);
+      }
+    }
+
+    let stems = [];
+    function seedPlants() {
+      stems = [];
+      const count = 4;
+      const spacing = ecoW / (count + 1);
+      for (let i = 1; i <= count; i++) {
+        const x = spacing * i + (Math.random() - 0.5) * 40;
+        const h = ecoH * (0.24 + Math.random() * 0.08);
+        const angle = 0.35 + Math.random() * 0.15;
+        stems.push(new BiophilicStem(x, ecoH - 20, h, angle));
+      }
+    }
+    seedPlants();
+
+    btnSeed.addEventListener('click', () => {
+      seedPlants();
+      // Burst spores
+      for (let i = 0; i < 30; i++) {
+        ecoSpores.push(new EcoParticle(Math.random() * ecoW, ecoH - 30));
+      }
+      hudSpores.textContent = `SPORES: ${ecoSpores.length}`;
+      updateMetrics();
+    });
+
+    // Ecosystem floating micro-particles
+    class EcoParticle {
+      constructor(x, y) {
+        this.x = x || Math.random() * ecoW;
+        this.y = y || Math.random() * ecoH;
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.vy = -Math.random() * 1.2 - 0.3;
+        this.rad = Math.random() * 2.2 + 1;
+        this.life = 1;
+        this.decay = Math.random() * 0.004 + 0.002;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= this.decay;
+        if (this.life <= 0 || this.y < 0) {
+          this.x = Math.random() * ecoW;
+          this.y = ecoH - 10;
+          this.life = 1;
+        }
+      }
+      draw(ctx) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.rad, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(126, 248, 171, ${this.life * 0.75})`;
+        ctx.fill();
+      }
+    }
+
+    let ecoSpores = [];
+    for (let i = 0; i < 65; i++) {
+      ecoSpores.push(new EcoParticle());
+    }
+
+    function renderEcosystem() {
+      ecoCtx.clearRect(0, 0, ecoW, ecoH);
+
+      // Draw Living Bio-Soil Floor
+      const soilGrad = ecoCtx.createLinearGradient(0, ecoH - 35, 0, ecoH);
+      soilGrad.addColorStop(0, '#06261c');
+      soilGrad.addColorStop(1, '#02110c');
+      ecoCtx.fillStyle = soilGrad;
+      ecoCtx.fillRect(0, ecoH - 35, ecoW, 35);
+
+      // Mycelial Network Grid on ground
+      ecoCtx.beginPath();
+      ecoCtx.moveTo(0, ecoH - 35);
+      for (let x = 0; x <= ecoW; x += 30) {
+        const wave = Math.sin((x * 0.05) + Date.now() * 0.002) * 4;
+        ecoCtx.lineTo(x, ecoH - 35 + wave);
+      }
+      ecoCtx.strokeStyle = 'rgba(56, 224, 123, 0.4)';
+      ecoCtx.lineWidth = 1.5;
+      ecoCtx.stroke();
+
+      // Draw Stems
+      stems.forEach(stem => stem.render(ecoCtx));
+
+      // Draw and update eco particles
+      ecoSpores.forEach(p => {
+        p.update();
+        p.draw(ecoCtx);
+      });
+
+      requestAnimationFrame(renderEcosystem);
+    }
+    renderEcosystem();
+
+
+    /* =========================================================================
+       4. HABITAT IMPACT CALCULATOR
+       ========================================================================= */
+    const settlementType = document.getElementById('settlementType');
+    const greenRoofPct = document.getElementById('greenRoofPct');
+    const roofPctText = document.getElementById('roofPctText');
+    const solarPanelSqM = document.getElementById('solarPanelSqM');
+    const calcNetCleanEnergy = document.getElementById('calcNetCleanEnergy');
+    const calcCarbonOffset = document.getElementById('calcCarbonOffset');
+
+    function calculateImpact() {
+      const type = settlementType.value;
+      const roof = parseInt(greenRoofPct.value);
+      const solarSqM = parseFloat(solarPanelSqM.value) || 0;
+
+      roofPctText.textContent = `${roof}%`;
+
+      let popMultiplier = 1;
+      if (type === 'ecovillage') popMultiplier = 0.4;
+      if (type === 'verticalArc') popMultiplier = 2.8;
+      if (type === 'suburbanCoop') popMultiplier = 1.1;
+
+      // Energy calculation: solarSqM * 220 kWh/sqM annual yield + biomass co-gen
+      const solarYieldMWh = (solarSqM * 240) / 1000;
+      const biomassCleanMWh = (roof * 1.8 * popMultiplier);
+      const totalMWh = Math.round(solarYieldMWh + biomassCleanMWh);
+
+      // Carbon offset calculation
+      const carbonTons = Math.round((totalMWh * 0.42) + (roof * 0.9 * popMultiplier));
+
+      calcNetCleanEnergy.textContent = `${totalMWh.toLocaleString()} MWh / yr`;
+      calcCarbonOffset.textContent = `🌱 Sequestering ~${carbonTons.toLocaleString()} Metric Tons CO₂ annually`;
+    }
+
+    settlementType.addEventListener('change', calculateImpact);
+    greenRoofPct.addEventListener('input', calculateImpact);
+    solarPanelSqM.addEventListener('input', calculateImpact);
+    calculateImpact();
+  </script>
+</body>
+</html>
