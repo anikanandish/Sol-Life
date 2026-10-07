@@ -21,6 +21,8 @@ An interactive, responsive single-file demonstration website portraying a harmon
   - Mycelial Digital Commons (resilient decentralized mesh nodes & seed registries).
 - **Ecological Habitat Planner**:
   - Configurable calculator estimating net surplus renewable energy (MWh/yr) and annual metric tons of CO₂ sequestered across multiple settlement typologies.
+- **Biophilic Ambient Soundscape Synthesizer (Web Audio API)**:
+  - Generative real-time acoustic synthesizer with pink-noise filtered canopy breeze, 432 Hz dual sine solar drone resonance, and random bio-mist water droplets with live visual EQ bars.
 - **Zero Dependencies**: Standalone HTML5, modern CSS3 (custom properties, flexbox/grid, backdrop-filter glassmorphism), and vanilla JavaScript.
 
 ---
