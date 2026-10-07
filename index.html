@@ -1296,6 +1296,12 @@
             <div style="margin-top: 0.8rem; font-size: 0.85rem; color: var(--accent-leaf);" id="calcCarbonOffset">
               🌱 Sequestering ~124 Metric Tons CO₂ annually
             </div>
+            <button id="btn-export-blueprint" class="btn btn-glass" style="width: 100%; margin-top: 1rem; justify-content: center; font-size: 0.85rem;">
+              📋 Export Node Blueprint (JSON)
+            </button>
+            <div id="export-toast" style="display: none; margin-top: 0.5rem; font-size: 0.78rem; color: var(--accent-gold); font-family: var(--font-mono);">
+              ✔ Blueprint copied to clipboard!
+            </div>
           </div>
         </div>
       </div>
@@ -1768,6 +1774,32 @@
     greenRoofPct.addEventListener('input', calculateImpact);
     solarPanelSqM.addEventListener('input', calculateImpact);
     calculateImpact();
+
+    const btnExportBlueprint = document.getElementById('btn-export-blueprint');
+    const exportToast = document.getElementById('export-toast');
+
+    btnExportBlueprint.addEventListener('click', () => {
+      const blueprintData = {
+        habitatType: settlementType.value,
+        greenRoofCoveragePct: parseInt(greenRoofPct.value),
+        solarArraySqMeters: parseFloat(solarPanelSqM.value),
+        projectedSurplusCleanEnergy: calcNetCleanEnergy.textContent,
+        carbonOffsetEstimate: calcCarbonOffset.textContent.replace('🌱 ', '').trim(),
+        solarBioGridVersion: "2085.4",
+        timestamp: new Date().toISOString()
+      };
+
+      const jsonStr = JSON.stringify(blueprintData, null, 2);
+      navigator.clipboard.writeText(jsonStr).then(() => {
+        exportToast.style.display = 'block';
+        setTimeout(() => {
+          exportToast.style.display = 'none';
+        }, 3200);
+      }).catch(() => {
+        // Fallback alert
+        prompt("Copy Solarpunk Blueprint Data:", jsonStr);
+      });
+    });
 
     /* =========================================================================
        5. SOLARPUNK WEB AUDIO AMBIENT SYNTHESIZER
