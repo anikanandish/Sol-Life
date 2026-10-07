@@ -28,6 +28,24 @@
       --font-mono: 'Space Grotesk', monospace;
     }
 
+    /* Aurora Bioluminescent Night Theme */
+    body[data-theme="aurora"] {
+      --bg-deep: #030d17;
+      --bg-surface: rgba(9, 28, 48, 0.75);
+      --bg-glass: rgba(12, 42, 69, 0.48);
+      --accent-leaf: #00f0ff;
+      --accent-glow: #70ffff;
+      --accent-solar: #e056fd;
+      --accent-gold: #f368e0;
+      --accent-sky: #48dbfb;
+      --text-main: #f0faff;
+      --text-sub: #c7ecee;
+      --text-muted: #81ecec;
+      --border-bio: rgba(0, 240, 255, 0.3);
+      --border-gold: rgba(224, 86, 253, 0.35);
+      --card-shadow: 0 16px 40px -10px rgba(2, 12, 28, 0.75);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -995,9 +1013,15 @@
           <li><a href="#soundscape">Soundscape</a></li>
         </ul>
       </nav>
-      <div class="solar-status-pill">
-        <span class="live-dot"></span>
-        <span>GRID: 99.4% BIOCLEAN</span>
+      <div style="display: flex; align-items: center; gap: 0.8rem;">
+        <div class="solar-status-pill">
+          <span class="live-dot"></span>
+          <span>GRID: 99.4% BIOCLEAN</span>
+        </div>
+        <button id="btn-theme-toggle" class="btn btn-glass" style="padding: 0.45rem 0.9rem; font-size: 0.82rem;" title="Toggle Solarpunk Solar / Aurora Night Mode">
+          <span id="theme-icon">🌌</span>
+          <span id="theme-label">Aurora Mode</span>
+        </button>
       </div>
     </div>
   </header>
@@ -1859,6 +1883,26 @@
         if (audioCtx.state === 'running') {
           audioCtx.suspend();
         }
+      }
+    });
+
+    /* =========================================================================
+       6. DUAL THEME TOGGLE (Solar Daylight / Aurora Night)
+       ========================================================================= */
+    const btnThemeToggle = document.getElementById('btn-theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeLabel = document.getElementById('theme-label');
+
+    btnThemeToggle.addEventListener('click', () => {
+      const isAurora = document.body.getAttribute('data-theme') === 'aurora';
+      if (isAurora) {
+        document.body.removeAttribute('data-theme');
+        themeIcon.textContent = '🌌';
+        themeLabel.textContent = 'Aurora Mode';
+      } else {
+        document.body.setAttribute('data-theme', 'aurora');
+        themeIcon.textContent = '☀️';
+        themeLabel.textContent = 'Solar Mode';
       }
     });
   </script>
