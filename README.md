@@ -13,16 +13,19 @@ An interactive, responsive single-file demonstration website portraying a harmon
 - **Generative Algorithmic Ecosystem Simulator**:
   - Live procedural fractal botany engine generating dynamic plant growth based on environmental sliders.
   - Tunable variables for **Solar Exposure**, **Mycelial Nutrient Flow**, and **Atmospheric Moisture**.
-  - Interactive "Scatter Wildflower Seeds" spore burst effect.
+  - **Biome Archetype Presets**: One-click quick-tuning for Temperate Permaculture Grove, Arid Oasis, Tropical Cloud-Forest, and Sub-Arctic Taiga.
+  - Interactive "Scatter Wildflower Seeds" spore burst & topology reset.
   - Live telemetry dashboard tracking biomass density, solar harvest (kW), air purity, and biosphere stability state.
 - **Biophilic Architecture Pillars**:
   - Symbiotic Solar Architecture (perovskite bio-glass & thermal trellises).
   - Circular Agrivoltaics (food sovereignty & dual land utilization).
   - Mycelial Digital Commons (resilient decentralized mesh nodes & seed registries).
-- **Ecological Habitat Planner**:
+- **Ecological Habitat Planner & Blueprint Exporter**:
   - Configurable calculator estimating net surplus renewable energy (MWh/yr) and annual metric tons of CO₂ sequestered across multiple settlement typologies.
+  - One-click **JSON Blueprint Export** formatted directly to clipboard for architectural planning.
 - **Biophilic Ambient Soundscape Synthesizer (Web Audio API)**:
   - Generative real-time acoustic synthesizer with pink-noise filtered canopy breeze, 432 Hz dual sine solar drone resonance, and random bio-mist water droplets with live visual EQ bars.
+- **Dual Visual Modes**: Seamless toggle between Radiant Solar Daylight and Bioluminescent Aurora Night mode.
 - **Zero Dependencies**: Standalone HTML5, modern CSS3 (custom properties, flexbox/grid, backdrop-filter glassmorphism), and vanilla JavaScript.
 
 ---
