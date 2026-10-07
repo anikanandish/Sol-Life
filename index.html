@@ -1126,12 +1126,30 @@
             <div class="control-help">Rain catcher capture & bio-mist humidity dispersal.</div>
           </div>
 
-          <button id="btn-seed-bloom" class="btn btn-primary" style="width: 100%; justify-content: center;">
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-            </svg>
-            Scatter Wildflower Seeds
-          </button>
+          <div class="sim-card">
+            <label for="biome-preset">
+              <span>Biome Archetype Preset</span>
+            </label>
+            <select id="biome-preset" class="calc-select" style="margin-top: 0.3rem;">
+              <option value="temperate">Temperate Permaculture Grove</option>
+              <option value="arid">Arid Oasis & Xerophytic Succulents</option>
+              <option value="tropical">Tropical Cloud-Forest Canopy</option>
+              <option value="boreal">Sub-Arctic Taiga & Bioluminescent Moss</option>
+            </select>
+            <div class="control-help">Quick-tunes ecological variables to real-world solarpunk bio-zones.</div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; flex-direction: column;">
+            <button id="btn-seed-bloom" class="btn btn-primary" style="width: 100%; justify-content: center;">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+              </svg>
+              Scatter Wildflower Seeds
+            </button>
+            <button id="btn-reset-sim" class="btn btn-glass" style="width: 100%; justify-content: center; font-size: 0.85rem;">
+              ↺ Regenerate Ecosystem Topology
+            </button>
+          </div>
         </div>
 
         <div class="sim-display">
@@ -1599,6 +1617,45 @@
       // Burst spores
       for (let i = 0; i < 30; i++) {
         ecoSpores.push(new EcoParticle(Math.random() * ecoW, ecoH - 30));
+      }
+      hudSpores.textContent = `SPORES: ${ecoSpores.length}`;
+      updateMetrics();
+    });
+
+    const biomePreset = document.getElementById('biome-preset');
+    const btnResetSim = document.getElementById('btn-reset-sim');
+
+    biomePreset.addEventListener('change', (e) => {
+      const mode = e.target.value;
+      if (mode === 'temperate') {
+        inputSolar.value = 75;
+        inputMycelium.value = 60;
+        inputWater.value = 50;
+      } else if (mode === 'arid') {
+        inputSolar.value = 95;
+        inputMycelium.value = 35;
+        inputWater.value = 15;
+      } else if (mode === 'tropical') {
+        inputSolar.value = 85;
+        inputMycelium.value = 80;
+        inputWater.value = 90;
+      } else if (mode === 'boreal') {
+        inputSolar.value = 45;
+        inputMycelium.value = 75;
+        inputWater.value = 60;
+      }
+      valSolar.textContent = inputSolar.value + '%';
+      valMycelium.textContent = inputMycelium.value + '%';
+      valWater.textContent = inputWater.value + '%';
+      seedPlants();
+      updateMetrics();
+    });
+
+    btnResetSim.addEventListener('click', () => {
+      seedPlants();
+      ecoSpores = [];
+      for (let i = 0; i < 65; i++) {
+        ecoSpores.push(new EcoParticle());
       }
       hudSpores.textContent = `SPORES: ${ecoSpores.length}`;
       updateMetrics();
