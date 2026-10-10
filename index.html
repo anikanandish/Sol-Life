@@ -1684,6 +1684,25 @@
       });
     });
 
+    // Smooth numerical ticker animation on initial load
+    function animateHeroCounters() {
+      const globalReforest = document.getElementById('global-reforest');
+      let startVal = 0;
+      const targetVal = 48.2;
+      const duration = 1600;
+      const startTime = performance.now();
+
+      function update(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = (progress * targetVal).toFixed(1);
+        if (globalReforest) globalReforest.textContent = `${current}%`;
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    }
+    animateHeroCounters();
+
 
     /* =========================================================================
        3. ECOSYSTEM SIMULATOR CANVAS & ALGORITHMIC BOTANY

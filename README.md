@@ -25,6 +25,12 @@ An interactive, responsive single-file demonstration website portraying a harmon
   - One-click **JSON Blueprint Export** formatted directly to clipboard for architectural planning.
 - **Biophilic Ambient Soundscape Synthesizer (Web Audio API)**:
   - Generative real-time acoustic synthesizer with pink-noise filtered canopy breeze, 432 Hz dual sine solar drone resonance, and random bio-mist water droplets with live visual EQ bars.
+- **Open Seed & Heritage Vault**:
+  - Bio-regional catalogue featuring Kernza Solar-Wheat, Aurora Solanum, and Pleurotus Terra-Filter with interactive sample reservation triggers.
+- **Scroll Progress & Return-to-Top**:
+  - Live top-reading progress bar with multi-tone gradient and quick floating jump-to-top control.
+- **Animated Biophilic Metrics**:
+  - Smooth initial hero counter animations measuring global wild canopy percentage and solar capture.
 - **Dual Visual Modes**: Seamless toggle between Radiant Solar Daylight and Bioluminescent Aurora Night mode.
 - **Zero Dependencies**: Standalone HTML5, modern CSS3 (custom properties, flexbox/grid, backdrop-filter glassmorphism), and vanilla JavaScript.
 
