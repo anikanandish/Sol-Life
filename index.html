@@ -901,6 +901,84 @@
       color: var(--accent-glow);
     }
 
+    /* Solarpunk Seed Vault & Commons */
+    .seed-vault-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .seed-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-bio);
+      border-radius: 20px;
+      padding: 1.6rem;
+      backdrop-filter: blur(14px);
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .seed-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-leaf);
+    }
+
+    .seed-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.9rem;
+    }
+
+    .seed-emoji {
+      font-size: 1.8rem;
+    }
+
+    .seed-card h4 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      margin-bottom: 0.4rem;
+      color: #fff;
+    }
+
+    .seed-desc {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      margin-bottom: 1.2rem;
+      line-height: 1.5;
+    }
+
+    .seed-meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--text-sub);
+      padding-top: 0.8rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      align-items: center;
+    }
+
+    .btn-claim-seed {
+      background: rgba(56, 224, 123, 0.15);
+      border: 1px solid var(--border-bio);
+      color: var(--text-main);
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      transition: all 0.2s ease;
+    }
+
+    .btn-claim-seed:hover {
+      background: var(--accent-leaf);
+      color: #042918;
+    }
+
     /* Footer */
     footer {
       border-top: 1px solid var(--border-bio);
@@ -1011,6 +1089,7 @@
           <li><a href="#pillars">Architecture</a></li>
           <li><a href="#impact">Calculator</a></li>
           <li><a href="#soundscape">Soundscape</a></li>
+          <li><a href="#seeds">Seed Vault</a></li>
         </ul>
       </nav>
       <div style="display: flex; align-items: center; gap: 0.8rem;">
@@ -1372,6 +1451,69 @@
             </div>
             <input type="range" class="control-range" id="vol-rain" min="0" max="100" value="25">
             <div class="control-help">Randomized micro-pitch pulses replicating condensing rainwater collectors.</div>
+          </div>
+        </div>
+    </section>
+
+    <!-- Open Seed Commons & Biodiversity Vault -->
+    <section class="section-wrap" id="seeds">
+      <div class="section-header">
+        <span class="section-tag">Decentralized Agriculture</span>
+        <h2 class="section-title">Open Seed & Heritage Vault</h2>
+        <p class="section-desc">
+          Resilient heirloom varieties curated by bio-regional cooperatives for climate adaptation, high nutritional density, and permacultural symbiosis.
+        </p>
+      </div>
+
+      <div class="seed-vault-grid">
+        <div class="seed-card">
+          <div>
+            <div class="seed-card-head">
+              <span class="seed-emoji">🌾</span>
+              <span class="badge">Perennial Poly-Grain</span>
+            </div>
+            <h4>Kernza Solar-Wheat</h4>
+            <p class="seed-desc">
+              Deep-rooting perennial grain capable of thriving for 5 consecutive years without tilling, preventing topsoil erosion and fixing underground nitrogen.
+            </p>
+          </div>
+          <div class="seed-meta">
+            <span>Viability: 99.2%</span>
+            <button class="btn-claim-seed" onclick="claimSeed(this, 'Kernza Solar-Wheat')">Request Seed Packet</button>
+          </div>
+        </div>
+
+        <div class="seed-card">
+          <div>
+            <div class="seed-card-head">
+              <span class="seed-emoji">🍅</span>
+              <span class="badge">Bio-Glass Climber</span>
+            </div>
+            <h4>Aurora Cherry Solanum</h4>
+            <p class="seed-desc">
+              Vertical hydroponic vine bred to thrive in diffuse photovoltaic greenhouse light, yielding anthocyanin-rich fruits with 40% reduced water intake.
+            </p>
+          </div>
+          <div class="seed-meta">
+            <span>Viability: 98.6%</span>
+            <button class="btn-claim-seed" onclick="claimSeed(this, 'Aurora Cherry Solanum')">Request Seed Packet</button>
+          </div>
+        </div>
+
+        <div class="seed-card">
+          <div>
+            <div class="seed-card-head">
+              <span class="seed-emoji">🍄</span>
+              <span class="badge">Mycoremediation</span>
+            </div>
+            <h4>Pleurotus Terra-Filter</h4>
+            <p class="seed-desc">
+              Mycelial strain engineered to break down urban micro-plastics into rich organic humus while purifying greywater runoffs through straw bales.
+            </p>
+          </div>
+          <div class="seed-meta">
+            <span>Viability: 99.8%</span>
+            <button class="btn-claim-seed" onclick="claimSeed(this, 'Pleurotus Terra-Filter')">Request Seed Packet</button>
           </div>
         </div>
       </div>
@@ -1994,6 +2136,16 @@
         themeLabel.textContent = 'Solar Mode';
       }
     });
+
+    /* =========================================================================
+       7. OPEN SEED COMMONS INTERACTION
+       ========================================================================= */
+    function claimSeed(btn, seedName) {
+      btn.textContent = '✓ Reserved in Vault';
+      btn.style.background = 'var(--accent-solar)';
+      btn.style.color = '#042918';
+      btn.disabled = true;
+    }
   </script>
 </body>
 </html>
