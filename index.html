@@ -158,6 +158,52 @@
       border-radius: 2px;
     }
 
+    /* Scroll progress bar */
+    #scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-leaf), var(--accent-solar), var(--accent-sky));
+      z-index: 999;
+      width: 0%;
+      transition: width 0.1s ease-out;
+    }
+
+    /* Floating Return-to-Top Button */
+    #btn-back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-bio);
+      color: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      z-index: 90;
+    }
+
+    #btn-back-to-top.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #btn-back-to-top:hover {
+      background: var(--accent-leaf);
+      color: #042918;
+      transform: translateY(-3px);
+    }
+
     nav a:hover {
       color: #fff;
     }
@@ -1071,6 +1117,10 @@
 
   <!-- Background Ambient Particle Canvas -->
   <canvas id="ambient-canvas"></canvas>
+
+  <!-- Scroll Progress & Back-to-Top -->
+  <div id="scroll-progress"></div>
+  <button id="btn-back-to-top" title="Return to Top" aria-label="Return to top">↑</button>
 
   <!-- Navigation -->
   <header>
@@ -2146,6 +2196,29 @@
       btn.style.color = '#042918';
       btn.disabled = true;
     }
+
+    /* =========================================================================
+       8. SCROLL PROGRESS & QUICK RETURN-TO-TOP
+       ========================================================================= */
+    const scrollProgress = document.getElementById('scroll-progress');
+    const btnBackToTop = document.getElementById('btn-back-to-top');
+
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      if (scrollProgress) scrollProgress.style.width = scrolled + '%';
+
+      if (winScroll > 400) {
+        btnBackToTop.classList.add('visible');
+      } else {
+        btnBackToTop.classList.remove('visible');
+      }
+    });
+
+    btnBackToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   </script>
 </body>
 </html>
